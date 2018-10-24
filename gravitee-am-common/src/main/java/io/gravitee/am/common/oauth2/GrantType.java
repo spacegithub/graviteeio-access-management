@@ -56,4 +56,11 @@ public interface GrantType {
      * See <a href="https://tools.ietf.org/html/rfc7523#section-2.1">2.1. Using JWTs as Authorization Grant</a>
      */
     String JWT_BEARER ="urn:ietf:params:oauth:grant-type:jwt-bearer";
+
+    /**
+     * SAML 2.0 Bearer
+     *
+     * See <a href="https://tools.ietf.org/html/rfc7522#section-2.1">2.1. Using SAML Assertions as Authorization Grants</a>
+     */
+    String SAML2_BEARER ="urn:ietf:params:oauth:grant-type:saml2-bearer";
 }

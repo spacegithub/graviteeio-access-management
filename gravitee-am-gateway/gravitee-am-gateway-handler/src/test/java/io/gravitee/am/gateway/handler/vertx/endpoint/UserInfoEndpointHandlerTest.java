@@ -23,7 +23,7 @@ import io.gravitee.am.gateway.handler.vertx.RxWebTestBase;
 import io.gravitee.am.gateway.handler.vertx.handler.ExceptionHandler;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.endpoint.UserInfoEndpoint;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.handler.UserInfoRequestParseHandler;
-import io.gravitee.am.gateway.service.UserService;
+import io.gravitee.am.service.UserService;
 import io.gravitee.am.model.User;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;

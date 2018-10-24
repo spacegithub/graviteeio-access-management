@@ -45,6 +45,9 @@ export class DomainService {
       'description': domain.description,
       'path': domain.path,
       'enabled': domain.enabled,
+      'dynamicClientRegistrationEnabled': domain.dynamicClientRegistrationEnabled,
+      'openClientRegistrationEnabled': domain.openClientRegistrationEnabled,
+      'allowedClientsToRegister': domain.allowedClientsToRegister,
       'identities' : domain.identities,
       'oauth2Identities': domain.oauth2Identities
     });

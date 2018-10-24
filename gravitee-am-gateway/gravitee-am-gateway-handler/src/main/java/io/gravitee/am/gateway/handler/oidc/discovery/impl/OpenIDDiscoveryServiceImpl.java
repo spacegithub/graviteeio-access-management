@@ -46,6 +46,7 @@ public class OpenIDDiscoveryServiceImpl implements OpenIDDiscoveryService {
     private static final String REVOCATION_ENDPOINT = "/oauth/revoke";
     private static final String INTROSPECTION_ENDPOINT = "/oauth/introspect";
     private static final String ENDSESSION_ENDPOINT = "/logout";
+    private static final String REGISTRATION_ENDPOINT = "/oidc/register";
 
     @Value("${oidc.iss:http://gravitee.am}")
     private String iss;
@@ -68,6 +69,7 @@ public class OpenIDDiscoveryServiceImpl implements OpenIDDiscoveryService {
         openIDProviderMetadata.setRevocationEndpoint(getEndpointAbsoluteURL(basePath, REVOCATION_ENDPOINT));
         openIDProviderMetadata.setIntrospectionEndpoint(getEndpointAbsoluteURL(basePath, INTROSPECTION_ENDPOINT));
         openIDProviderMetadata.setEndSessionEndpoint(getEndpointAbsoluteURL(basePath, ENDSESSION_ENDPOINT));
+        openIDProviderMetadata.setRegistrationEndpoint(getEndpointAbsoluteURL(basePath, REGISTRATION_ENDPOINT));
 
         // supported parameters
         openIDProviderMetadata.setScopesSupported(Stream.of(Scope.values()).map(Scope::getName).collect(Collectors.toList()));

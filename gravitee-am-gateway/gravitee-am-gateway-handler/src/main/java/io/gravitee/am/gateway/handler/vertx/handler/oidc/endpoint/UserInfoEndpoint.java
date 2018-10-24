@@ -22,7 +22,7 @@ import io.gravitee.am.gateway.handler.oauth2.token.AccessToken;
 import io.gravitee.am.gateway.handler.oauth2.token.impl.DefaultAccessToken;
 import io.gravitee.am.gateway.handler.oauth2.utils.OIDCParameters;
 import io.gravitee.am.gateway.handler.oidc.request.ClaimsRequest;
-import io.gravitee.am.gateway.service.UserService;
+import io.gravitee.am.service.UserService;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.MediaType;
 import io.vertx.core.Handler;

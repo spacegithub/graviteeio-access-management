@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.am.gateway.service;
-
-import io.gravitee.am.model.Role;
-import io.reactivex.Single;
-
-import java.util.List;
-import java.util.Set;
+package io.gravitee.am.common.oidc;
 
 /**
- * @author Titouan COMPIEGNE (titouan.compiegne at graviteesource.com)
- * @author GraviteeSource Team
+ * OpenID Connect Application Types
+ *
+ * See <a href="https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata">Client metadata</a>
+ *
+ * @author Alexandre FARIA
  */
-public interface RoleService {
+public interface ApplicationType {
 
-    Single<Set<Role>> findByIdIn(List<String> roles);
+    String WEB = "web";
+    String NATIVE = "native";
 }

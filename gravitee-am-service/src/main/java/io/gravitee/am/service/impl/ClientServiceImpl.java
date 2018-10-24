@@ -15,21 +15,15 @@
  */
 package io.gravitee.am.service.impl;
 
+import io.gravitee.am.common.oidc.ApplicationType;
 import io.gravitee.am.model.Client;
 import io.gravitee.am.model.common.Page;
 import io.gravitee.am.repository.management.api.ClientRepository;
 import io.gravitee.am.repository.oauth2.api.AccessTokenRepository;
-import io.gravitee.am.service.ClientService;
-import io.gravitee.am.service.DomainService;
-import io.gravitee.am.service.IdentityProviderService;
-import io.gravitee.am.service.exception.AbstractManagementException;
-import io.gravitee.am.service.exception.ClientAlreadyExistsException;
-import io.gravitee.am.service.exception.ClientNotFoundException;
-import io.gravitee.am.service.exception.TechnicalManagementException;
-import io.gravitee.am.service.model.NewClient;
-import io.gravitee.am.service.model.TopClient;
-import io.gravitee.am.service.model.TotalClient;
-import io.gravitee.am.service.model.UpdateClient;
+import io.gravitee.am.service.*;
+import io.gravitee.am.service.exception.*;
+import io.gravitee.am.service.model.*;
+import io.gravitee.am.service.utils.SetterUtils;
 import io.gravitee.common.utils.UUID;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
@@ -42,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,14 +62,25 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private DomainService domainService;
 
+    @Autowired
+    private ResponseTypeService responseTypeService;
+
+    @Autowired
+    private GrantTypeService grantTypeService;
+
+    @Autowired
+    private ScopeService scopeService;
+
+
+
     @Override
     public Maybe<Client> findById(String id) {
         LOGGER.debug("Find client by ID: {}", id);
         return clientRepository.findById(id)
                 .map(client -> {
                     // Send an empty array in case of no grant types
-                    if (client.getAuthorizedGrantTypes() == null) {
-                        client.setAuthorizedGrantTypes(Collections.emptyList());
+                    if (client.getGrantTypes() == null) {
+                        client.setGrantTypes(Collections.emptyList());
                     }
                     return client;
                 })
@@ -256,11 +262,13 @@ public class ClientServiceImpl implements ClientService {
                             } else {
                                 client.setClientSecret(newClient.getClientSecret());
                             }
+                            client.setClientName(newClient.getClientName());
                             client.setDomain(domain);
                             client.setAccessTokenValiditySeconds(Client.DEFAULT_ACCESS_TOKEN_VALIDITY_SECONDS);
                             client.setRefreshTokenValiditySeconds(Client.DEFAULT_REFRESH_TOKEN_VALIDITY_SECONDS);
                             client.setIdTokenValiditySeconds(Client.DEFAULT_ID_TOKEN_VALIDITY_SECONDS);
-                            client.setAuthorizedGrantTypes(Client.AUTHORIZED_GRANT_TYPES);
+                            client.setGrantTypes(Client.DEFAULT_GRANT_TYPES);
+                            client.setResponseTypes(Client.DEFAULT_RESPONSE_TYPES);
                             client.setEnabled(true);
                             client.setCreatedAt(new Date());
                             client.setUpdatedAt(client.getCreatedAt());
@@ -299,11 +307,12 @@ public class ClientServiceImpl implements ClientService {
                     }
                 })
                 .flatMap(client -> {
-                    client.setScopes(updateClient.getScopes());
+                    client.setClientName(updateClient.getClientName());
+                    client.setScope(updateClient.getScope());
                     client.setAutoApproveScopes(updateClient.getAutoApproveScopes());
                     client.setAccessTokenValiditySeconds(updateClient.getAccessTokenValiditySeconds());
                     client.setRefreshTokenValiditySeconds(updateClient.getRefreshTokenValiditySeconds());
-                    client.setAuthorizedGrantTypes(updateClient.getAuthorizedGrantTypes());
+                    client.setGrantTypes(updateClient.getGrantTypes());
                     client.setRedirectUris(updateClient.getRedirectUris());
                     client.setEnabled(updateClient.isEnabled());
                     client.setIdentities(updateClient.getIdentities());
@@ -346,5 +355,135 @@ public class ClientServiceImpl implements ClientService {
                     return Completable.error(new TechnicalManagementException(
                             String.format("An error occurs while trying to delete client: %s", clientId), ex));
                 });
+    }
+
+    @Override
+    public Single<Client> validateAndRegisterClient(final String domain, final ClientPayload payload) {
+        LOGGER.debug("Create a new client {} for domain {}", payload, domain);
+
+        //first ensure payload is valid.
+        return this.validateClientPayload(domain, payload).flatMap(isValid -> {
+            if(isValid) {
+                return this.registerClient(domain, payload);
+            }
+            return Single.error(new InvalidClientMetadataException());
+        });
+    }
+
+    private Single<Client> registerClient(final String domain, final ClientPayload payload) {
+        Client client = new Client();
+
+        /* set openid request metadata */
+        SetterUtils.safeSet(client::setRedirectUris, payload.getRedirectUris());
+        SetterUtils.safeSetOrElse(client::setResponseTypes, payload.getResponseTypes(), Client.DEFAULT_RESPONSE_TYPES);
+        SetterUtils.safeSetOrElse(client::setGrantTypes, payload.getGrantTypes(), Client.DEFAULT_GRANT_TYPES);
+        SetterUtils.safeSetOrElse(client::setApplicationType, payload.getApplicationType(), ApplicationType.WEB);
+        SetterUtils.safeSet(client::setContacts, payload.getContacts());
+        SetterUtils.safeSet(client::setClientName, payload.getClientName());
+        SetterUtils.safeSet(client::setLogoUri, payload.getLogoUri());
+        SetterUtils.safeSet(client::setClientUri, payload.getClientUri());
+        SetterUtils.safeSet(client::setPolicyUri, payload.getPolicyUri());
+        SetterUtils.safeSet(client::setTosUri, payload.getTosUri());
+
+        //--> Must analyse openid specifications for below properties...
+        SetterUtils.safeSet(client::setJwksUri, payload.getJwksUri());
+        //SetterUtils.safeSet(client::setJwks, payload.getJwks());TODO:Manage it later...
+        SetterUtils.safeSet(client::setSectorIdentifierUri, payload.getSectorIdentifierUri());
+        SetterUtils.safeSet(client::setSubjectType, payload.getSubjectType());
+        SetterUtils.safeSet(client::setIdTokenSignedResponseAlg, payload.getIdTokenSignedResponseAlg());
+        SetterUtils.safeSet(client::setIdTokenEncryptedResponseAlg, payload.getIdTokenEncryptedResponseAlg());
+        SetterUtils.safeSet(client::setIdTokenEncryptedResponseEnc, payload.getIdTokenEncryptedResponseEnc());
+        SetterUtils.safeSet(client::setUserinfoSignedResponseAlg, payload.getUserinfoSignedResponseAlg());
+        SetterUtils.safeSet(client::setUserinfoEncryptedResponseAlg, payload.getUserinfoEncryptedResponseAlg());
+        SetterUtils.safeSet(client::setUserinfoEncryptedResponseEnc, payload.getUserinfoEncryptedResponseEnc());
+        SetterUtils.safeSet(client::setRequestObjectSigningAlg, payload.getRequestObjectSigningAlg());
+        SetterUtils.safeSet(client::setRequestObjectEncryptionAlg, payload.getRequestObjectEncryptionAlg());
+        SetterUtils.safeSet(client::setRequestObjectEncryptionEnc, payload.getRequestObjectEncryptionEnc());
+        SetterUtils.safeSet(client::setTokenEndpointAuthMethod, payload.getTokenEndpointAuthMethod());
+        SetterUtils.safeSet(client::setTokenEndpointAuthSigningAlg, payload.getTokenEndpointAuthSigningAlg());
+        SetterUtils.safeSet(client::setDefaultMaxAge, payload.getDefaultMaxAge());
+        SetterUtils.safeSet(client::setRequireAuthTime, payload.getRequireAuthTime());
+        SetterUtils.safeSet(client::setDefaultACRvalues, payload.getDefaultACRvalues());
+        SetterUtils.safeSet(client::setInitiateLoginUri, payload.getInitiateLoginUri());
+        SetterUtils.safeSet(client::setRequestUris, payload.getRequestUris());
+
+        /* set oauth2 request metadata */
+        SetterUtils.safeSet(client::setScope, payload.getScope());
+        SetterUtils.safeSet(client::setSoftwareId, payload.getSoftwareId());
+        SetterUtils.safeSet(client::setSoftwareVersion, payload.getSoftwareVersion());
+        SetterUtils.safeSet(client::setSoftwareStatement, payload.getSoftwareStatement());
+
+        /* openid response metadata */
+        client.setId(UUID.toString(UUID.random()));
+        client.setClientId(UUID.toString(UUID.random()));
+        client.setClientSecret(UUID.toString(UUID.random()));
+
+        /* GRAVITEE.IO custom fields */
+        client.setDomain(domain);
+        client.setAccessTokenValiditySeconds(Client.DEFAULT_ACCESS_TOKEN_VALIDITY_SECONDS);
+        client.setRefreshTokenValiditySeconds(Client.DEFAULT_REFRESH_TOKEN_VALIDITY_SECONDS);
+        client.setIdTokenValiditySeconds(Client.DEFAULT_ID_TOKEN_VALIDITY_SECONDS);
+        client.setEnabled(true);
+        client.setCreatedAt(new Date());
+        client.setUpdatedAt(client.getCreatedAt());
+
+        //ensure correspondance between response & grant types.
+        grantTypeService.completeGrantTypeCorrespondance(client);
+
+        return clientRepository.create(client)
+                .flatMap(justCreatedClient -> {
+                    // Reload domain to take care about client creation
+                    return domainService.reload(domain).flatMap(domain1 -> Single.just(justCreatedClient));
+                });
+    }
+
+    /**
+     * Validate payload according to openid specifications.
+     *
+     * https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata
+     *
+     * @param domain String domain
+     * @param payload ClientPayload
+     */
+    private Single<Boolean> validateClientPayload(final String domain, final ClientPayload payload) {
+        LOGGER.debug("Validating dynamic client registration payload");
+
+        //Should not be null...
+        if(payload==null) {
+            return Single.error(new InvalidClientMetadataException());
+        }
+
+        //Redirect_uri is required, must be informed and filled without null values.
+        if(payload.getRedirectUris()==null ||
+                !payload.getRedirectUris().isPresent() ||
+                payload.getRedirectUris().get().size()==0 ||
+                new HashSet<>(payload.getRedirectUris().get()).contains(null)
+        ) {
+            return Single.error(new InvalidRedirectUriException());
+        }
+
+        //TODO: add check if env Production, then forbid localhost uris...
+        //TODO: If application type is web, then no http without and no localhost
+
+        //if response_type provided, they must be valid.
+        if(payload.getResponseTypes()!=null) {
+            if(!responseTypeService.isValideResponseType(payload.getResponseTypes().get())) {
+                return Single.error(new InvalidClientMetadataException("Invalid response type."));
+            }
+        }
+
+        //if grant_type provided, they must be valid.
+        if(payload.getGrantTypes()!=null) {
+            if(!grantTypeService.isValideGrantType(payload.getGrantTypes().get())) {
+                return Single.error(new InvalidClientMetadataException("Missing or invalid grant type."));
+            }
+        }
+
+        //Check scopes.
+        if(payload.getScope()!=null) {
+            return scopeService.validateScope(domain, payload.getScope().get());
+        }
+
+        return Single.just(true);
     }
 }

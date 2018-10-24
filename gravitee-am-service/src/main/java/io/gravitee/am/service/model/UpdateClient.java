@@ -27,9 +27,11 @@ public class UpdateClient {
 
     private List<String> redirectUris;
 
-    private List<String> authorizedGrantTypes;
+    private List<String> grantTypes;
 
-    private List<String> scopes;
+    private String clientName;
+
+    private List<String> scope;
 
     private List<String> autoApproveScopes;
 
@@ -61,20 +63,24 @@ public class UpdateClient {
         this.redirectUris = redirectUris;
     }
 
-    public List<String> getAuthorizedGrantTypes() {
-        return authorizedGrantTypes;
+    public List<String> getGrantTypes() {
+        return grantTypes;
     }
 
-    public void setAuthorizedGrantTypes(List<String> authorizedGrantTypes) {
-        this.authorizedGrantTypes = authorizedGrantTypes;
+    public void setGrantTypes(List<String> grantTypes) {
+        this.grantTypes = grantTypes;
     }
 
-    public List<String> getScopes() {
-        return scopes;
+    public String getClientName() { return clientName; }
+
+    public void setClientName(String clientName) { this.clientName = clientName; }
+
+    public List<String> getScope() {
+        return scope;
     }
 
-    public void setScopes(List<String> scopes) {
-        this.scopes = scopes;
+    public void setScope(List<String> scope) {
+        this.scope = scope;
     }
 
     public List<String> getAutoApproveScopes() {

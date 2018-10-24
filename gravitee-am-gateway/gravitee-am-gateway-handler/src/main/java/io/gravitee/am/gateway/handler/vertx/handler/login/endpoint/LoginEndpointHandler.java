@@ -42,6 +42,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.gravitee.am.common.oidc.Scope.SCOPE_DELIMITER;
+
 /**
  * @author Titouan COMPIEGNE (titouan.compiegne at graviteesource.com)
  * @author GraviteeSource Team
@@ -159,7 +161,7 @@ public class LoginEndpointHandler implements Handler<RoutingContext> {
                     builder.addParameter(OAuth2Constants.REDIRECT_URI, buildRedirectUri(request, identityProviderId));
                     builder.addParameter(OAuth2Constants.RESPONSE_TYPE, OAuth2Constants.CODE);
                     if (configuration.getScopes() != null && !configuration.getScopes().isEmpty()) {
-                        builder.addParameter(OAuth2Constants.SCOPE, String.join(" ", configuration.getScopes()));
+                        builder.addParameter(OAuth2Constants.SCOPE, String.join(SCOPE_DELIMITER, configuration.getScopes()));
                     }
                     return builder.build().toString();
                 }).toSingle();

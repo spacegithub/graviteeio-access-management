@@ -22,7 +22,6 @@ import io.gravitee.am.gateway.handler.auth.impl.UserAuthenticationManagerImpl;
 import io.gravitee.am.gateway.handler.oauth2.spring.OAuth2Configuration;
 import io.gravitee.am.gateway.handler.oidc.spring.OpenIDConfiguration;
 import io.gravitee.am.gateway.handler.vertx.spring.SecurityDomainRouterConfiguration;
-import io.gravitee.am.gateway.service.spring.ServiceConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @Import({
-        ServiceConfiguration.class,
         OAuth2Configuration.class,
         OpenIDConfiguration.class,
         SecurityDomainRouterConfiguration.class

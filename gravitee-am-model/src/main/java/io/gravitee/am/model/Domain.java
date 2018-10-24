@@ -47,6 +47,21 @@ public class Domain {
     private boolean enabled;
 
     /**
+     * Domain Dynamic Client Registration enabled
+     */
+    private boolean dynamicClientRegistrationEnabled;
+
+    /**
+     * Domain open Dynamic Client Registration enabled
+     */
+    private boolean openClientRegistrationEnabled;
+
+    /**
+     * Domain allowed clients to use Dynamic Client Registration
+     */
+    private Set<String> allowedClientsToRegister;
+
+    /**
      * Domain master flag.
      */
     private boolean master;
@@ -102,6 +117,24 @@ public class Domain {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isDynamicClientRegistrationEnabled() { return dynamicClientRegistrationEnabled; }
+
+    public void setDynamicClientRegistrationEnabled(boolean dynamicClientRegistrationEnabled) {
+        this.dynamicClientRegistrationEnabled = dynamicClientRegistrationEnabled;
+    }
+
+    public boolean isOpenClientRegistrationEnabled() { return openClientRegistrationEnabled; }
+
+    public void setOpenClientRegistrationEnabled(boolean openClientRegistrationEnabled) {
+        this.openClientRegistrationEnabled = openClientRegistrationEnabled;
+    }
+
+    public Set<String> getAllowedClientsToRegister() { return allowedClientsToRegister; }
+
+    public void setAllowedClientsToRegister(Set<String> allowedClientsToRegister) {
+        this.allowedClientsToRegister = allowedClientsToRegister;
     }
 
     public boolean isMaster() {

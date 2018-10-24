@@ -164,7 +164,7 @@ public class TokenEndpointHandlerTest extends RxWebTestBase {
     public void shouldInvokeTokenEndpoint_withValidClientCredentials() throws Exception {
         io.gravitee.am.model.Client client = new io.gravitee.am.model.Client();
         client.setClientId("my-client");
-        client.setScopes(Collections.singletonList("read"));
+        client.setScope(Collections.singletonList("read"));
 
         router.route().order(-1).handler(new Handler<RoutingContext>() {
             @Override
@@ -219,7 +219,7 @@ public class TokenEndpointHandlerTest extends RxWebTestBase {
     public void shouldInvokeTokenEndpoint_withValidClientCredentials_noAccessToken() throws Exception {
         io.gravitee.am.model.Client client = new io.gravitee.am.model.Client();
         client.setClientId("my-client");
-        client.setScopes(Collections.singletonList("read"));
+        client.setScope(Collections.singletonList("read"));
 
         router.route().order(-1).handler(new Handler<RoutingContext>() {
             @Override
@@ -240,7 +240,7 @@ public class TokenEndpointHandlerTest extends RxWebTestBase {
     public void shouldInvokeTokenEndpoint_withValidClientCredentials_withoutGrantType() throws Exception {
         io.gravitee.am.model.Client client = new io.gravitee.am.model.Client();
         client.setClientId("my-client");
-        client.setAuthorizedGrantTypes(null);
+        client.setGrantTypes(null);
 
         router.route().order(-1).handler(new Handler<RoutingContext>() {
             @Override

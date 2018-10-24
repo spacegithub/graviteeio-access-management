@@ -15,6 +15,7 @@
  */
 package io.gravitee.am.gateway.handler.oauth2.token.impl;
 
+import com.google.common.base.Strings;
 import io.gravitee.am.gateway.handler.oauth2.exception.InvalidGrantException;
 import io.gravitee.am.gateway.handler.oauth2.request.OAuth2Request;
 import io.gravitee.am.gateway.handler.oauth2.request.TokenRequest;
@@ -29,11 +30,14 @@ import io.gravitee.am.repository.oauth2.api.AccessTokenRepository;
 import io.gravitee.am.repository.oauth2.api.RefreshTokenRepository;
 import io.gravitee.am.repository.oauth2.model.AccessTokenCriteria;
 import io.gravitee.am.repository.oauth2.model.RefreshToken;
+import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.util.MultiValueMap;
 import io.gravitee.common.utils.UUID;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+import io.vertx.reactivex.core.http.HttpServerRequest;
+import io.vertx.reactivex.ext.web.RoutingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -133,6 +137,31 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Completable deleteRefreshToken(String refreshToken) {
         return refreshTokenRepository.delete(refreshToken);
+    }
+
+    /**
+     * Respect https://tools.ietf.org/html/rfc6750#section-2 by extracting first from header, then parameter.
+     * @param context RoutingContext
+     * @return AccessToken
+     */
+    @Override
+    public Maybe<AccessToken> extractAccessToken(RoutingContext context) {
+        final HttpServerRequest request = context.request();
+
+        //Extract first from Authorization Header
+        final String authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
+        if(authorization!=null && authorization.trim().startsWith(AccessToken.BEARER_TYPE+" ")) {
+            String token = authorization.replaceFirst(AccessToken.BEARER_TYPE+" ","");
+            return Maybe.just(new DefaultAccessToken(token));
+        }
+
+        //Extract from query parameter.
+        final String accessToken = context.request().getParam(AccessToken.ACCESS_TOKEN);
+        if(!Strings.isNullOrEmpty(accessToken)) {
+            return Maybe.just(new DefaultAccessToken(accessToken));
+        }
+
+        return Maybe.empty();
     }
 
     private Single<io.gravitee.am.repository.oauth2.model.AccessToken> createAccessToken(OAuth2Request oAuth2Request, Client client, User endUser) {

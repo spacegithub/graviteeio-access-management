@@ -24,7 +24,7 @@ import io.gravitee.am.gateway.handler.vertx.handler.login.endpoint.LoginCallback
 import io.gravitee.am.gateway.handler.vertx.handler.login.endpoint.LoginEndpointHandler;
 import io.gravitee.am.gateway.handler.vertx.handler.login.endpoint.LoginRequestParseHandler;
 import io.gravitee.am.gateway.handler.vertx.handler.login.endpoint.LogoutEndpointHandler;
-import io.gravitee.am.gateway.service.UserService;
+import io.gravitee.am.service.UserService;
 import io.gravitee.am.model.Domain;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.auth.AuthProvider;
@@ -61,7 +61,9 @@ public class LoginRouter {
         final Router router = Router.router(vertx);
 
         // create authentication handlers
-        final AuthProvider identityProviderAuthProvider = new AuthProvider(new OAuth2ClientAuthenticationProvider(identityProviderManager, userService));
+        final AuthProvider identityProviderAuthProvider = new AuthProvider(
+                new OAuth2ClientAuthenticationProvider(identityProviderManager, userService, domain)
+        );
 
         // login handler
         router.get("/login")

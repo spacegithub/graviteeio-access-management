@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.am.gateway.handler.oauth2.exception;
+package io.gravitee.am.common.oauth2.exception;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)

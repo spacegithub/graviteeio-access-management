@@ -21,8 +21,6 @@ import io.gravitee.am.gateway.handler.oidc.flow.CompositeFlow;
 import io.gravitee.am.gateway.handler.oidc.flow.Flow;
 import io.gravitee.am.gateway.handler.oidc.idtoken.IDTokenService;
 import io.gravitee.am.gateway.handler.oidc.idtoken.impl.IDTokenServiceImpl;
-import io.gravitee.am.gateway.handler.oidc.idtoken.IDTokenService;
-import io.gravitee.am.gateway.handler.oidc.idtoken.impl.IDTokenServiceImpl;
 import io.gravitee.am.gateway.handler.oidc.jwk.JWKSetService;
 import io.gravitee.am.gateway.handler.oidc.jwk.impl.JWKSetServiceImpl;
 import org.springframework.context.annotation.Bean;

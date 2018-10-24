@@ -20,7 +20,8 @@ import io.gravitee.am.gateway.handler.oauth2.exception.InvalidGrantException;
 import io.gravitee.am.gateway.handler.oauth2.granter.AbstractTokenGranter;
 import io.gravitee.am.gateway.handler.oauth2.request.TokenRequest;
 import io.gravitee.am.gateway.handler.oauth2.token.TokenService;
-import io.gravitee.am.gateway.service.UserService;
+import io.gravitee.am.model.Domain;
+import io.gravitee.am.service.UserService;
 import io.gravitee.am.identityprovider.api.DefaultUser;
 import io.gravitee.am.model.Client;
 import io.gravitee.am.model.ExtensionGrant;
@@ -42,16 +43,19 @@ public class ExtensionGrantGranter extends AbstractTokenGranter {
     private ExtensionGrantProvider extensionGrantProvider;
     private ExtensionGrant extensionGrant;
     private UserService userService;
+    private Domain domain;
 
     public ExtensionGrantGranter(ExtensionGrantProvider extensionGrantProvider,
                                  ExtensionGrant extensionGrant,
                                  UserService userService,
-                                 TokenService tokenService) {
+                                 TokenService tokenService,
+                                 Domain domain) {
         super(extensionGrant.getGrantType());
         setTokenService(tokenService);
         this.extensionGrantProvider = extensionGrantProvider;
         this.extensionGrant = extensionGrant;
         this.userService = userService;
+        this.domain = domain;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class ExtensionGrantGranter extends AbstractTokenGranter {
                     Map<String, Object> additionalInformation = endUser.getAdditionalInformation() == null ? new HashMap<>() : new HashMap<>(endUser.getAdditionalInformation());
                     additionalInformation.put("source", extensionGrant.getIdentityProvider());
                     ((DefaultUser) endUser).setAdditonalInformation(additionalInformation);
-                    return userService.findOrCreate(endUser).toMaybe();
+                    return userService.findOrCreate(domain.getId(), endUser).toMaybe();
                 })
                 .onErrorResumeNext(ex -> {
                     return Maybe.error(new InvalidGrantException());

@@ -102,6 +102,9 @@ public class MongoDomainRepository extends AbstractManagementMongoRepository imp
         domain.setName(domainMongo.getName());
         domain.setDescription(domainMongo.getDescription());
         domain.setEnabled(domainMongo.isEnabled());
+        domain.setDynamicClientRegistrationEnabled(domainMongo.isDynamicClientRegistrationEnabled());
+        domain.setOpenClientRegistrationEnabled(domainMongo.isOpenClientRegistrationEnabled());
+        domain.setAllowedClientsToRegister(domainMongo.getAllowedClientsToRegister());
         domain.setMaster(domainMongo.isMaster());
         domain.setLoginForm(convert(domainMongo.getLoginForm()));
         domain.setIdentities(domainMongo.getIdentities());
@@ -122,6 +125,9 @@ public class MongoDomainRepository extends AbstractManagementMongoRepository imp
         domainMongo.setName(domain.getName());
         domainMongo.setDescription(domain.getDescription());
         domainMongo.setEnabled(domain.isEnabled());
+        domainMongo.setDynamicClientRegistrationEnabled(domain.isDynamicClientRegistrationEnabled());
+        domainMongo.setOpenClientRegistrationEnabled(domain.isOpenClientRegistrationEnabled());
+        domainMongo.setAllowedClientsToRegister(domain.getAllowedClientsToRegister());
         domainMongo.setMaster(domain.isMaster());
         domainMongo.setLoginForm(convert(domain.getLoginForm()));
         domainMongo.setIdentities(domain.getIdentities());

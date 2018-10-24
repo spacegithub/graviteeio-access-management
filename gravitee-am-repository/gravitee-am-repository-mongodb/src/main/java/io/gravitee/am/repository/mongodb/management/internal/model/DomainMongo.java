@@ -35,6 +35,12 @@ public class DomainMongo extends Auditable {
 
     private boolean enabled;
 
+    private boolean dynamicClientRegistrationEnabled;
+
+    private boolean openClientRegistrationEnabled;
+
+    private Set<String> allowedClientsToRegister;
+
     private boolean master;
 
     private String path;
@@ -83,6 +89,24 @@ public class DomainMongo extends Auditable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isDynamicClientRegistrationEnabled() { return dynamicClientRegistrationEnabled; }
+
+    public void setDynamicClientRegistrationEnabled(boolean dynamicClientRegistrationEnabled) {
+        this.dynamicClientRegistrationEnabled = dynamicClientRegistrationEnabled;
+    }
+
+    public boolean isOpenClientRegistrationEnabled() { return openClientRegistrationEnabled; }
+
+    public void setOpenClientRegistrationEnabled(boolean openClientRegistrationEnabled) {
+        this.openClientRegistrationEnabled = openClientRegistrationEnabled;
+    }
+
+    public Set<String> getAllowedClientsToRegister() { return allowedClientsToRegister; }
+
+    public void setAllowedClientsToRegister(Set<String> allowedClientsToRegister) {
+        this.allowedClientsToRegister = allowedClientsToRegister;
     }
 
     public String getPath() {

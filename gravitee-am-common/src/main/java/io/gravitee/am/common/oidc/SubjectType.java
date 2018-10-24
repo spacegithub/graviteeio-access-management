@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.am.model;
+package io.gravitee.am.common.oidc;
 
 /**
- * @author David BRASSELY (david.brassely at graviteesource.com)
- * @author GraviteeSource Team
+ * OpenID Connect Subject Types
+ *
+ * See <a href="https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata">Client metadata</a>
+ *
+ * @author Alexandre FARIA
  */
-public enum GrantType {
+public interface SubjectType {
 
-    CLIENT_CREDENTIALS("client_credentials"),
-    PASSWORD("password"),
-    AUTHORIZATION_CODE("authorization_code"),
-    REFRESH_TOKEN("refresh_token"),
-    IMPLICIT("implicit");
-
-    private String name;
-
-    GrantType(String name) {
-        this.name = name;
-    }
-
-    public String type() {
-        return this.name;
-    }
+    String PUBLIC = "public";
+    String PAIRWISE = "pairwise";
 }

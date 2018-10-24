@@ -21,14 +21,11 @@ import io.gravitee.am.gateway.handler.oauth2.exception.ServerErrorException;
 import io.gravitee.am.gateway.handler.oauth2.utils.OAuth2Constants;
 import io.gravitee.am.gateway.handler.vertx.auth.handler.RedirectAuthHandler;
 import io.gravitee.am.model.Client;
-import io.gravitee.am.model.Domain;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Login page must be call after user being redirected here from restricted endpoint (i.e Authorization Endpoint)

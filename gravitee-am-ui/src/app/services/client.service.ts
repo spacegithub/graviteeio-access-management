@@ -38,9 +38,10 @@ export class ClientService {
 
   update(domainId, id, client): Observable<Response> {
     return this.http.put(this.clientsURL + domainId + "/clients/" + id, {
+      'clientName': client.clientName,
       'redirectUris': client.redirectUris,
-      'authorizedGrantTypes': client.authorizedGrantTypes,
-      'scopes': client.scopes,
+      'grantTypes': client.grantTypes,
+      'scope': client.scope,
       'autoApproveScopes': client.autoApproveScopes,
       'accessTokenValiditySeconds': client.accessTokenValiditySeconds,
       'refreshTokenValiditySeconds': client.refreshTokenValiditySeconds,

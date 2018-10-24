@@ -13,31 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.am.gateway.service;
+package io.gravitee.am.service;
 
-import io.gravitee.am.model.User;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
+import java.util.List;
 
 /**
- * @author David BRASSELY (david.brassely at graviteesource.com)
+ * @author Alexandre FARIA
  * @author GraviteeSource Team
  */
-public interface UserService {
+public interface ResponseTypeService {
 
     /**
-     * Used after a successful authentication.
-     * Perhaps not the best place to put this method.
-     *
-     * @param user
-     * @return
+     * Throw InvalidClientMetadataException if null or empty, or contains unknown response types.
+     * @param responseTypes Array of response_type to validate.
      */
-    Single<User> findOrCreate(io.gravitee.am.identityprovider.api.User user);
+    boolean isValideResponseType(List<String> responseTypes);
 
     /**
-     * Find user by its technical id
-     * @param id user technical id
-     * @return user or empty
+     * Throw InvalidClientMetadataException if null or contains unknown response types.
+     * @param responseType String to response_type validate.
      */
-    Maybe<User> findById(String id);
+    boolean isValideResponseType(String responseType);
 }

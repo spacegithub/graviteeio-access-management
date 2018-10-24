@@ -79,7 +79,7 @@ public class ClientResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Update a client")
     @ApiResponses({
-            @ApiResponse(code = 201, message = "Client successfully updated", response = Client.class),
+            @ApiResponse(code = 200, message = "Client successfully updated", response = Client.class),
             @ApiResponse(code = 500, message = "Internal server error")})
     public void update(
             @PathParam("domain") String domain,

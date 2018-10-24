@@ -28,6 +28,8 @@ public class NewClient {
 
     private String clientSecret;
 
+    private String clientName;
+
     public String getClientId() {
         return clientId;
     }
@@ -43,6 +45,10 @@ public class NewClient {
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
+
+    public String getClientName() { return clientName; }
+
+    public void setClientName(String clientName) { this.clientName = clientName; }
 
     @Override
     public String toString() {

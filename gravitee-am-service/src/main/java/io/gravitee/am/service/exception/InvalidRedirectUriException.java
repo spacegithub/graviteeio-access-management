@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.am.gateway.service.spring;
+package io.gravitee.am.service.exception;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import io.gravitee.am.common.oauth2.exception.OAuth2Exception;
 
 /**
- * @author Titouan COMPIEGNE (titouan.compiegne at graviteesource.com)
- * @author GraviteeSource Team
+ * The value of one or more redirect_uris is invalid.
+ *
+ * https://openid.net/specs/openid-connect-registration-1_0.html#RegistrationError
+ *
+ * @author Alexandre FARIA
  */
-@Configuration
-@ComponentScan("io.gravitee.am.gateway.service")
-public class ServiceConfiguration {
+public class InvalidRedirectUriException extends OAuth2Exception {
+
+    public InvalidRedirectUriException() {
+        super("Missing or invalid redirect_uris.");
+    }
+
+    @Override
+    public String getOAuth2ErrorCode() {
+        return "invalid_redirect_uri";
+    }
 }

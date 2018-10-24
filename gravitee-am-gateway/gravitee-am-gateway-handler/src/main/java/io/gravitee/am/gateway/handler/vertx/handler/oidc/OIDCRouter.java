@@ -18,11 +18,15 @@ package io.gravitee.am.gateway.handler.vertx.handler.oidc;
 import io.gravitee.am.gateway.handler.oauth2.token.TokenService;
 import io.gravitee.am.gateway.handler.oidc.discovery.OpenIDDiscoveryService;
 import io.gravitee.am.gateway.handler.oidc.jwk.JWKSetService;
+import io.gravitee.am.gateway.handler.vertx.handler.oidc.endpoint.DynamicClientRegistrationEndpoint;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.endpoint.ProviderConfigurationEndpoint;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.endpoint.ProviderJWKSetEndpoint;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.endpoint.UserInfoEndpoint;
+import io.gravitee.am.gateway.handler.vertx.handler.oidc.handler.DynamicClientRegistrationHandler;
 import io.gravitee.am.gateway.handler.vertx.handler.oidc.handler.UserInfoRequestParseHandler;
-import io.gravitee.am.gateway.service.UserService;
+import io.gravitee.am.model.Domain;
+import io.gravitee.am.service.ClientService;
+import io.gravitee.am.service.UserService;
 import io.gravitee.common.http.MediaType;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -62,6 +66,12 @@ public class OIDCRouter {
     private Environment environment;
 
     @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private Domain domain;
+
+    @Autowired
     private Vertx vertx;
 
     public Router route() {
@@ -95,6 +105,15 @@ public class OIDCRouter {
         router
                 .route(HttpMethod.GET, "/.well-known/jwks.json")
                 .handler(openIDProviderJWKSetEndpoint);
+
+        // Dynamic Client Registration
+        Handler<RoutingContext> dynamicClientRegistrationHandler = new DynamicClientRegistrationHandler(domain, tokenService);
+        Handler<RoutingContext> dynamicClientRegistrationEndpoint = new DynamicClientRegistrationEndpoint(clientService);
+        router
+                .route(HttpMethod.POST, "/register")
+                .consumes(MediaType.APPLICATION_JSON)
+                .handler(dynamicClientRegistrationHandler)
+                .handler(dynamicClientRegistrationEndpoint);
 
         return router;
     }

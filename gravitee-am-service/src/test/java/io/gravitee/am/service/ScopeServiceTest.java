@@ -276,7 +276,7 @@ public class ScopeServiceTest {
 
         Client client = mock(Client.class);
         when(client.getId()).thenReturn("client-1");
-        when(client.getScopes()).thenReturn(new LinkedList<>(Arrays.asList("my-scope")));
+        when(client.getScope()).thenReturn(new LinkedList<>(Arrays.asList("my-scope")));
 
         when(roleService.findByDomain(DOMAIN)).thenReturn(Single.just(Collections.singleton(role)));
         when(clientService.findByDomain(DOMAIN)).thenReturn(Single.just(Collections.singleton(client)));

@@ -120,6 +120,8 @@ public class DomainServiceImpl implements DomainService {
                         domain.setName(newDomain.getName());
                         domain.setDescription(newDomain.getDescription());
                         domain.setEnabled(false);
+                        domain.setDynamicClientRegistrationEnabled(false);
+                        domain.setOpenClientRegistrationEnabled(false);
                         domain.setCreatedAt(new Date());
                         domain.setUpdatedAt(domain.getCreatedAt());
                         return domainRepository.create(domain);
@@ -148,6 +150,9 @@ public class DomainServiceImpl implements DomainService {
                     domain.setName(updateDomain.getName());
                     domain.setDescription(updateDomain.getDescription());
                     domain.setEnabled(updateDomain.isEnabled());
+                    domain.setDynamicClientRegistrationEnabled(updateDomain.isDynamicClientRegistrationEnabled());
+                    domain.setOpenClientRegistrationEnabled(updateDomain.isOpenClientRegistrationEnabled());
+                    domain.setAllowedClientsToRegister(updateDomain.getAllowedClientsToRegister());
                     domain.setIdentities(updateDomain.getIdentities());
                     domain.setOauth2Identities(updateDomain.getOauth2Identities());
                     // master flag is set programmatically (keep old value)
@@ -180,6 +185,9 @@ public class DomainServiceImpl implements DomainService {
                     domain.setName(oldDomain.getName());
                     domain.setDescription(oldDomain.getDescription());
                     domain.setEnabled(oldDomain.isEnabled());
+                    domain.setDynamicClientRegistrationEnabled(oldDomain.isDynamicClientRegistrationEnabled());
+                    domain.setOpenClientRegistrationEnabled(oldDomain.isOpenClientRegistrationEnabled());
+                    domain.setAllowedClientsToRegister(oldDomain.getAllowedClientsToRegister());
                     domain.setMaster(oldDomain.isMaster());
                     domain.setCreatedAt(oldDomain.getCreatedAt());
                     domain.setUpdatedAt(new Date());
@@ -211,6 +219,9 @@ public class DomainServiceImpl implements DomainService {
                     domain.setName(oldDomain.getName());
                     domain.setDescription(oldDomain.getDescription());
                     domain.setEnabled(oldDomain.isEnabled());
+                    domain.setDynamicClientRegistrationEnabled(oldDomain.isDynamicClientRegistrationEnabled());
+                    domain.setOpenClientRegistrationEnabled(oldDomain.isOpenClientRegistrationEnabled());
+                    domain.setAllowedClientsToRegister(oldDomain.getAllowedClientsToRegister());
                     domain.setMaster(isMaster);
                     domain.setCreatedAt(oldDomain.getCreatedAt());
                     domain.setUpdatedAt(new Date());
